@@ -1,0 +1,8 @@
+{% for post in %}
+
+<form method="POST"> 
+    {% csrf_token %} 
+    {{comment_form.as_p}} 
+
+    <button type="submit" value="Submit" class="btn btn-success">Create</button>
+  </form> 

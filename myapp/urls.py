@@ -4,7 +4,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
   
-from .views import Signup ,Home, Loginview ,Search ,logout_request , image_upload_view ,update_data ,upload_profile_pic
+from .views import Signup ,Home, Loginview ,Search ,logout_request ,update_data ,upload_profile_pic ,upload_cover_pic
 
 app_name = "myapp"   
   
@@ -14,9 +14,10 @@ urlpatterns = [
     path('login/',Loginview) ,
     path('search/',Search),
     path('logout', logout_request, name='logout'),
-    path('upload/', views.image_upload_view),
+    # path('upload/', views.image_upload_view),
     path('updatedata/<int:id>/', update_data , name='updatedata'),
-    path('uploaddp/', upload_profile_pic , name='uploadprofilepic'),
+    path('uploaddp/<int:id>/', upload_profile_pic , name='uploadprofilepic'),
+    path('uploadcover/<int:id>/', upload_cover_pic , name='uploadcoverpic'),
 ] 
 
 if settings.DEBUG:

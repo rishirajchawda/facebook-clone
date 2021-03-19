@@ -12,11 +12,11 @@ class Fbform(UserCreationForm):
         model = User 
         fields = ('username','first_name','last_name','email', 'password1','password2')
  
-class ImageForm(forms.ModelForm):
+# class ImageForm(forms.ModelForm):
 
-    class Meta:
-        model = Profile 
-        fields = ('image',)
+#     class Meta:
+#         model = Profile 
+#         fields = ('image',)
 
 class ExtendForm(forms.ModelForm):
 

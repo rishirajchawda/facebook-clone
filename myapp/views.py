@@ -1,13 +1,15 @@
+from pdb import set_trace
 from django.shortcuts import render ,redirect
 from django.views.generic import View
-from .forms import Fbform ,ImageForm ,ExtendForm ,UpdateForm ,UploadDP ,UploadBanner
+from .forms import Fbform ,ExtendForm ,UpdateForm ,UploadDP ,UploadBanner
 from django.contrib.auth import authenticate , login ,logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from .models import Profile
 from django.db.models import Q
 from django.contrib import messages
-from postapp.models import UserPost
+from postapp.models import Post ,Like
+from postapp.forms import Postform 
 
  
 def Signup(request):
@@ -39,10 +41,20 @@ def Signup(request):
 @login_required
 def Home(request):
 
-    profile=Profile.objects.get(user=request.user) 
-    posts = UserPost.objects.all()
+    fm=Postform()
+    fm2 = UpdateForm()
+    fm3 = UploadDP()
+    fm4 = UploadBanner()
+    # fm5 = CommentForm()
+    user = request.user
+    likepost = Like.objects.all()
 
-    return render(request,'home.html',{'profile':profile,'post':posts })
+
+    profile=Profile.objects.get(user=request.user) 
+    posts = Post.objects.all()
+
+    return render(request,'home.html',{'profile':profile,'post':posts ,
+    'form':fm , 'form2':fm2 ,'form3':fm3 ,'form4':fm4 ,'user':user , 'likepost':likepost})
 
 
 def Loginview(request):
@@ -75,21 +87,22 @@ def Search(request):
     return render(request, 'search.html', params)
 
 
-def image_upload_view(request):
+# def image_upload_view(request):
     
-    if request.method == 'POST':
-        form = ImageForm(request.POST, request.FILES)
+#     if request.method == 'POST':
+#         form = ImageForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            form.save(request.user)
+#         if form.is_valid():
+#             form.save(request.user)
 
-            img_obj=Profile.objects.get(user=request.user)
-            return render(request, 'home.html', {'form': form, 'img_obj': img_obj})
-    else:
-        form = ImageForm()
-    return render(request, 'home.html', {'form': form})
+#             img_obj=Profile.objects.get(user=request.user)
+#             return render(request, 'home.html', {'form': form, 'img_obj': img_obj})
+#     else:
+#         form = ImageForm()
+#     return render(request, 'home.html', {'form': form})
 
 
+@login_required
 def update_data(request ,id):
     if request.method == "POST":
         model_data = Profile.objects.get(pk=id)
@@ -103,15 +116,31 @@ def update_data(request ,id):
     return render(request ,'updatedata.html' , {'form':fm})
 
 
-def upload_profile_pic(request):
+@login_required
+def upload_profile_pic(request ,id):
     if request.method == "POST":
-        dp_form = UploadDP(request.POST , request.FILES)
-
-        if dp_form.is_valid():
-            dp_form.save(request.user)
-            return redirect('/home/',{'dp_form':dp_form})
+        model_data = Profile.objects.get(pk=id)
+        fm3 = UploadDP(request.POST , request.FILES ,instance=model_data)
+        if fm3.is_valid():
+            fm3.save()
+            return redirect("/home/")
 
     else:
+        model_data = Profile.objects.get(pk=id)
+        fm3 = UploadDP(instance = model_data)
+    return render(request ,'upload_dp.html' , {'form3':fm3})   
 
-        dp_form = UploadDP()
-    return redirect('/home/' ,{'dp_form': dp_form})        
+
+@login_required
+def upload_cover_pic(request ,id):
+    if request.method == "POST":
+        model_data = Profile.objects.get(pk=id)
+        fm4 = UploadBanner(request.POST , request.FILES ,instance=model_data)
+        if fm4.is_valid():
+            fm4.save()
+            return redirect("/home/")
+
+    else:
+        model_data = Profile.objects.get(pk=id)
+        fm4 = UploadBanner(instance = model_data)
+    return render(request ,'uploadcover.html' , {'form4':fm4})      

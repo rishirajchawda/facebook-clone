@@ -1,23 +1,37 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
     <title>Document</title>
 </head>
 <body>
-    {% for po in post %}
-    <td>{{ po.user }}</td>
-    <td>{{ po.title }}</td>
-    <td>{{ po.yourpost }}</td>
-    <td><img src="{% if po.post_pic %}
+    {% for po in post reversed %}
+    <h1>{{ po.user }}</h1>
+        {{ po.title }}
+    <p>{{ po.yourpost }}</p>
+    <td><img width="400" src="{% if po.post_pic %} 
                 {{po.post_pic.url}}
               {%endif%}"> </td>
+                <form action="{% url 'postapp:like-posts' %}" method="POST" class="ui form">
+                    {% csrf_token %}
+                    <input type="hidden" name = 'post_id' value={{po.id}}>
+                        {% if request.user not in post.likes.all %}
+                            <button class="ui button positive" type='submit'>unLike</button>
+                        {% else %}
+                            <button class="ui button negative" type='submit'>like</button>
+                        {% endif %}
+                </form>
+            <strong>{{ po.likes.all.count }} likes</strong>
     {% endfor %}
 </body>
-</html>￼
-￼
-￼
+</html>
+
+￼   
+￼ 
 ￼
 ￼
