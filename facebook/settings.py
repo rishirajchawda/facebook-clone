@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'bootstrap_modal_forms',
     'myapp',
     'postapp',
+    'social_django',
+    
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,17 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 MEDIA_URL = '/media/'
 
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.instagram.InstagramOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/home/'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'signup'
+
+SOCIAL_AUTH_FACEBOOK_KEY = 221887479451662       
+SOCIAL_AUTH_FACEBOOK_SECRET = '66b9667946824ef42b87736e70aa8ff0'

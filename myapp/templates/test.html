@@ -1,0 +1,68 @@
+<!-- like html form -->
+<form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form" id="{{po.id}}">
+    {% csrf_token %}
+    <input type="hidden" name = 'post_id' value={{po.id}}>
+    
+        <button class="btn btn-success like-btn{{po.id}}" type='submit'>
+            {% if user not in po.likes.all %}
+                Like
+            {% else %}
+                Unlike
+            {% endif %}
+        </button>
+        <div class="ui grid">
+            <div class="column">
+                <div class="like-count{{po.id}}">
+                    <strong>{{ po.likes.all.count }} </strong>
+                </div>
+            </div>
+            <div class="column">
+                <strong>Likes</strong>
+            </div>
+        </div>
+</form>
+<!-- like javascript and AJAX -->
+<script>
+    $( document ).ready(function() {
+        let display = false
+        $('.like-form').submit(function(e){
+            e.preventDefault()
+
+            const post_id = $(this).attr('id')
+            
+            const likeText = $(`.like-btn${post_id}`).text()
+            const trim =$.trim(likeText)
+            
+            const url = $(this).attr('action')
+            
+            let res;
+            const likes = $(`.like-count${post_id}`).text()
+            const trimCount = parseInt(likes)
+            console.log(trimCount + 1)
+ 
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data:{
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                    'post_id':post_id,
+                },
+                success: function(response){
+                    if(trim === 'Unlike'){
+                        $(`.like-btn${post_id}`).text('Like')
+                        res = trimCount - 1
+                    }else{
+                        $(`.like-btn${post_id}`).text('Unlike')
+                        res = trimCount + 1
+                    }
+
+                    $(`.like-count${post_id}`).text(res)
+                },
+                error:function(response){
+                    console.log('error',response)
+                }
+            })
+        })
+    });
+</script>
+

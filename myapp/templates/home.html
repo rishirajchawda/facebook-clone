@@ -18,6 +18,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+    
 
 
     <title>Dashboard</title>
@@ -163,19 +164,28 @@
                 <div class="l-cnt l-mrg">
                     <div class="cnt-label">
                         <i class="l-i" id="l-i-k"></i>
-                        <span>Did You Know<i id="k-nm">1</i></span>
+                        <span>Friends Section<i id="k-nm"></i></span>
                     </div>
                     <div>
                         <div class="q-ad-c">
                             <a href="#" class="q-ad">
                                 <img src="https://imagizer.imageshack.com/img923/1849/4TnLy1.png">
-                                <span>My favorite superhero is...</span>
+                                <br>
+                                
+                                <a href="{% url 'myapp:friends' %}" ><button class="btn btn-primary">My Friend list</button>
+                                <br>
+                                <br>
+                        
+                                <a href="{% url 'myapp:all-profiles-view' %}" ><button class="btn btn-primary">Find Friends</button>
+                                <br>  
+                                <br> 
+                                <a href="{% url 'myapp:my-invites-view' %}" ><button class="btn btn-primary">Received Requests</button>
                             </a>
                         </div>
                         <div class="q-ad-c">
                             <a href="#" class="q-ad" id="add_q">
-                                <i class="material-icons">add</i>
-                                <span>Add Answer</span>
+                                <i class="material-icons"></i>
+                                <span></span>
                             </a>
                         </div>
                     </div>
@@ -192,8 +202,6 @@
                     <div class="tb">
                         <div class="td">
                             <div class="tb" id="p-tabs-m">
-                                <div class="td active"><i class="material-icons">av_timer</i><span>TIMELINE</span>
-                                </div>
                                 <div class="td"><i class="material-icons">people</i><span>FRIENDS</span></div>
                                 <div class="td"><i class="material-icons">photo</i><span>PHOTOS</span></div>
                                 <div class="td"><i class="material-icons">explore</i><span>ABOUT</span></div>
@@ -227,9 +235,11 @@
                 </div>
                 <div>
                     {% for po in post reversed %}
+                    {% if po.user in profile.get_friends %}
                     <div class="post">
 
                         <div class="td">
+
                             <a href="#" class="td p-p-pic"><img
                                     src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"
                                     alt="Rishiraj'S profile pic"></a>
@@ -255,23 +265,138 @@
                         </a>
                         <div>
                             <div class="p-acts">
-                                <form action="{% url 'postapp:like-posts' %}" method="POST" class="ui form">
+                                <!-- <div class="like-count{{po.id}}">
+                                    <strong>{{ po.likes.all.count }} </strong>likes
+                                </div> --> 
+                                 
+                                <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form" id="{{po.id}}">
                                     {% csrf_token %}
                                     <input type="hidden" name = 'post_id' value={{po.id}}>
                                     
-                                        <button class="btn btn-success" type='submit'>{{ po.likes.all.count }} Likes</button>
-                                    
-                                        <button class="btn btn-danger" type='submit'>Unlike</button>
+                                        <button class="btn btn-success like-btn{{po.id}}" type='submit'>
+                                            {% if user not in po.likes.all %}
+                                                Like
+                                            {% else %}
+                                                Unlike
+                                            {% endif %}
+                                        </button>
+                                        <div class="ui grid">
+                                            <div class="column">
+                                                <div class="like-count{{po.id}}">
+                                                    <strong>{{ po.likes.all.count }} </strong>
+                                                </div>
+                                            </div>
+                                            <div class="column">
+                                                <strong>Likes</strong>
+                                            </div>
+                                        </div>
                                 </form>
-                            <!-- <strong>{{ po.likes.all.count }} likes</strong> -->
+                            
                             <br>
                                 <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}" role="button">Comments..</a>
                                 <div class="p-act share"><i class="material-icons"></i></div>
                             </div>
                         </div>
+                      
                     </div>
-                    <hr>
+                      {% for comment in comments.all %}
+                      {% if comment.post == po %}
+                      <center>
+                          <h6>Comment By - {{comment.user.username}}</h6>
+                          <span class="card-title">{{comment.content}}</span>
+                          <span><h10>{{comment.date_posted}}</h10></span> 
+                      </center>
+                          {% endif %}
+                          {% endfor %}
+                                  
+                            
+                            
+                        
+                        <hr>
+                        {% elif po.user == profile.user%}
+                        <div class="post" id="single-posts">
+
+                            <div class="td">
+                                <div>
+                                    
+                                    <input type="hidden" id="del-id" value="{{po.id}}">
+                                    <input type="button" id="del-btn" class="btn btn-danger btn-sm" value="delete">
+                                 </div>
+                                <a href="#" class="td p-p-pic"><img
+                                        src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"
+                                        alt="Rishiraj'S profile pic"></a>
+                                <div class="td p-r-hdr">
+                                    <div class="p-u-info">
+                                        {{ po.user }}
+                                        <!-- <a href="#">Rajeev Singh</a> shared a memory with <a href="#">Himalaya Singh</a>  -->
+                                    </div>
+                                    <div class="p-dt">
+                                        <i class="material-icons">{{ po.title }}</i>
+                                        <br>
+                                        {{ po.yourpost }}
+                                        <br>
+                                        <span>{{ po.date_posted }}</span>
+                                    </div>
+                                </div>
+                                <div class="td p-opt"><i class="material-icons"></i></div>
+                            </div>
+                        <a href="{% url 'postapp:detail' po.id %}" class="p-cnt-v">
+                                <img src="{% if po.post_pic %}
+                                            {{po.post_pic.url}}
+                                          {%endif%}">
+                            </a>
+                            <div>
+                                <div class="p-acts">
+                                    <!-- <div class="like-count{{po.id}}">
+                                        <strong>{{ po.likes.all.count }} </strong>likes
+                                    </div> --> 
+                                     
+                                    <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form" id="{{po.id}}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name = 'post_id' value={{po.id}}>
+                                        
+                                            <button class="btn btn-success like-btn{{po.id}}" type='submit'>
+                                                {% if user not in po.likes.all %}
+                                                    Like
+                                                {% else %}
+                                                    Unlike
+                                                {% endif %}
+                                            </button>
+                                            <div class="ui grid">
+                                                <div class="column">
+                                                    <div class="like-count{{po.id}}">
+                                                        <strong>{{ po.likes.all.count }} </strong>
+                                                    </div>
+                                                </div>
+                                                <div class="column">
+                                                    <strong>Likes</strong>
+                                                </div>
+                                            </div>
+                                    </form>
+                                
+                                <br>
+                                    <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}" role="button">Comments..</a>
+                                    <div class="p-act share"><i class="material-icons"></i></div>
+                                </div>
+                            </div>
+                          
+                        </div>
+                          {% for comment in comments.all %}
+                          {% if comment.post == po %}
+                          <center>
+                              <h6>Comment By - {{comment.user.username}}</h6>
+                              <span class="card-title">{{comment.content}}</span>
+                              <span><h10>{{comment.date_posted}}</h10></span> 
+                          </center>
+                              {% endif %}
+                              {% endfor %}
+                                      
+                                
+                                
+                            <hr>
+                            {% endif %}
                     {% endfor %}
+
                 </div>
                 <div id="loading"><i class="material-icons">autorenew</i></div>
             </div>
@@ -465,8 +590,7 @@
                 <br>
                     <button class="btn btn-dark" type="submit"> Reply </button>
                 </form>
-                
-                
+                         
                 {% endfor%}
                   <hr>
                 <div>
@@ -497,6 +621,68 @@
     <script src="{% static 'js/index.js' %}"></script>
     <!-- You can alternatively load the minified version -->
     <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+    <script>
+        $( document ).ready(function() {
+            let display = false
+            $('.like-form').submit(function(e){
+                e.preventDefault()
+
+                const post_id = $(this).attr('id')
+                
+                const likeText = $(`.like-btn${post_id}`).text()
+                const trim =$.trim(likeText)
+                
+                const url = $(this).attr('action')
+                
+                let res;
+                const likes = $(`.like-count${post_id}`).text()
+                const trimCount = parseInt(likes)
+                console.log(trimCount + 1)
+
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data:{
+                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                        'post_id':post_id,
+                    },
+                    success: function(response){
+                        if(trim === 'Unlike'){
+                            $(`.like-btn${post_id}`).text('Like')
+                            res = trimCount - 1
+                        }else{
+                            $(`.like-btn${post_id}`).text('Unlike')
+                            res = trimCount + 1
+                        }
+
+                        $(`.like-count${post_id}`).text(res)
+                    },
+                    error:function(response){
+                        console.log('error',response)
+                    }
+                })
+            })
+        });
+    </script>
+    <script>
+        $(document).on('click', '#del-btn',function(e){ //BUTTON ID
+
+          var del_id = $('#del-id').val(); //INPUT FIELD
+          var my_data = {
+            "del_id" : del_id,
+            'csrfmiddlewaretoken': "{{ csrf_token }}",
+          }
+          $.ajax({
+          type:'POST',
+          url: '{% url "postapp:postdelete" %}',
+          data:my_data,
+        success:function(json){
+          $("#single-posts").remove()
+          alert("Do you want to delete post");
+          },
+        });
+        });
+    </script>
 
 </body>
 ￼
@@ -513,5 +699,6 @@
     {{comment_form.as_p}} 
     <button type="submit" value="Submit" class="btn btn-success">Create</button>
   </form> 
+
 
 </main>

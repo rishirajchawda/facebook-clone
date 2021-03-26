@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <!--Custom css-->
+        
+        <!-- semantic UI -->
+        <link rel="stylesheet" type='text/css' href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.14/semantic.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <title>Profiles</title>
+</head>
+<body>
+    <ul>
+        {% if is_empty %}
+            <h1>No Profiles To Interact With....</h1>
+        {% endif %}
+        {% for obj in object_list %}
+            <div class = "ui segment" >
+                <div class = "ui grid" >
+                    <div class = "row">
+                        <div class = "three wide column">
+                            {% if obj.image %}
+                                <img class = "ui small circular image" src={{obj.image.url}}>
+                            {% else %}
+                                <img class = "ui small circular image" src=https://sevenpillarsinstitute.org/wp-content/uploads/2017/10/facebook-avatar-1.jpg>
+                            {% endif %}
+                        </div>
+                        <div class = "thirteen wide column" >
+                            <h3>{{obj.user}}</h3>
+                            <button class = "ui primary button">See Profile</button>
+                            
+                    
+                            <!-- Adding to Friends -->
+                            {% if obj.user not in rel_receiver and obj.user not in rel_sender %}
+                            <form action="{% url 'myapp:send-invite' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                                
+                                     <br>
+                                    <button type="submit" class = "ui positive basic button"><i class="plus square icon"></i>Add to friends</button>
+                                
+                            </form>
+                            {% endif %}
+
+
+                                {% if obj.user in rel_receiver and request.user not in obj.friends.all %}
+                                    <br>
+                                    <br>
+                                    <button class="ui disabled button"><i class ="user icon"></i>Waiting for approval</button>
+                                {% endif %}
+
+
+                            <!-- Removing from Friends -->
+                            {% if request.user in obj.friends.all %}
+                            <form action="{% url 'myapp:remove-friend' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                                
+                                     <br>
+                                    <button type="submit" class = "ui negative basic button"><i class="minus square icon"></i>Remove from friends</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        {% endfor %}
+    </ul>
+</body>
+</html>

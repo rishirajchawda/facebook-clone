@@ -6,8 +6,23 @@
 <head>
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style2.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
 
 </html>
+<div class="row">
+  
+</div>
+</div>
 <form method="POST" action="/login/" >
   {% csrf_token %}
   <div id="navwrapper">
@@ -24,10 +39,10 @@
           <td><input type="password" class="inputtext" name="password">
           </td>
           <td>
-            <div><button type="submit">Login</button></div>
+            <div><button class="btn btn-primary" type="submit">Login</button></div>
           </td>
           <td>
-          
+
         </td>
         </tr>
         <tr>
@@ -79,42 +94,75 @@
           <span class="rowtext2 fb1">of what you're looking for with graph search</span>
         </div>
       </div>
+      <div class="col-md-8 mx-auto social-container my-2 order-md-1">
+        <!-- <button class="btn btn-danger  mb-2">
+            <a href="#">Login with Instagram</a>
+        </button> -->
+        <button >
+          <a href="{% url 'social:begin' 'facebook' %}">Login with Facebook</a>
+      </button>
+        <!-- <button class="btn btn-info mb-2">
+            <a href="#">Login with LinkedIn</a>
+        </button> -->
+    </div>
 
 
     </div>
 
     <div id="rightbod">
+          {% for message in messages %}
+
+              <div class="alert alert-danger" role="alert">
+
+                     {{ message }}
+
+              </div>
+          {% endfor %}
+
+
+          {% if form.errors %}
+             <div class="alert alert-danger" role="alert">
+		          <!-- <button type="button" class="close" data-dismiss="alert">×</button> -->
+		          {% for field in form %} 
+			          {% if field.errors %}
+			            <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+			          {% endif %}
+		            {% endfor %}
+	              </div>
+                {% endif %}
+
       <div class="signup bolder">Sign Up</div>
       <div class="free bolder">It's free and always will be</div>
 
       <form method="POST" action="">
         {% csrf_token %}
-        <h4>Username</h4>{{ form.username }}
-        {% if form.username.errors %}
+        
+        <h5>Username</h5>{{ form.username }}
+        <!-- {% if form.username.errors %}
         {{ form.username.errors }}
-        {% endif %}
-        <h4>Firstname</h4>{{ form.first_name }}
-        {% if form.first_name.errors %}
+        {% endif %} -->
+        <h5>Firstname</h5>{{ form.first_name }}
+        <!-- {% if form.first_name.errors %}
         {{ form.first_name.errors }}
-        {% endif %}
-        <h4>Lastname</h4>{{ form.last_name }}
-        {% if form.last_name.errors %}
+        {% endif %} -->
+        <h5>Lastname</h5>{{ form.last_name }}
+        <!-- {% if form.last_name.errors %}
         {{ form.last_name.errors }}
-        {% endif %}
-        <h4>Email</h4>{{ form.email }}
-        {% if form.email.errors %}
+        {% endif %} -->
+        <h5>Email</h5>{{ form.email }}
+        <!-- {% if form.email.errors %}
         {{ form.email.errors }}
-        {% endif %}
-        <h4>Password</h4>{{ form.password1}}
-        {% if form.password1.errors %}
+        {% endif %} -->
+        <h5>Password</h5>{{ form.password1}}
+        <!-- {% if form.password1.errors %}
         <h style="font-size:16px;color:red">{{form.password1.errors}}</h>
-        {% endif %}
-        <h4>Confirm Password</h4>{{ form.password2}}
-        {% if form.password2.errors %}
+        {% endif %} -->
+        <h5>Confirm Password</h5>{{ form.password2}}
+        <!-- {% if form.password2.errors %}
         <h style="font-size:16px;color:red">{{form.password2.errors}}</h>
-        {% endif %}
+        {% endif %} -->
         <!-- <h4>birth_date</h4>{{ form2.birth_date }} -->
-        <h4>gender</h4>{{ form2.gender }}
+        <h5>gender</h5>{{ form2.gender }}
 
 
 
@@ -169,17 +217,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
 </head>
-<!-- <body>
-    <h2>FaceBook signup</h2>
-    <form method="POST">
-    {% csrf_token %}
-    {{ form.last_name }}
-    {{ form.first_name }}
-    {{ form.email }}
-    {{ form.password1}}
-    {{ form.password2}} -->
+<body>
 
-<!-- <button type="submit">Sign up</button>
-</form>
+
+  
 </body>
-</html>  -->
+</html> 

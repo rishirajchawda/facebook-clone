@@ -4,6 +4,7 @@ from .models import Post
 from .forms import Postform 
 from django.contrib.auth.decorators import login_required
 from .models import Comment ,Like
+from django.http import JsonResponse
 
 
 def createpost(request):
@@ -20,6 +21,14 @@ def createpost(request):
         fm = Postform()
     
     return render(request, 'post.html', { 'form':fm })
+
+def delete_post(request):
+    if request.method == 'POST':
+        post_id=request.POST.get('del_id')
+        model_data = Post.objects.get(pk=post_id)
+        model_data.delete()
+
+    return JsonResponse({'':""})
 
 
 @login_required
@@ -104,6 +113,15 @@ def like_posts(request):
                     like.value == 'Unlike'
                 else:
                     like.value == 'Like'
+            else:
+                like.value='like'
 
-            like.save()
+                post_obj.save()
+                like.save()
+
+            data = {
+                'value':like.value,
+                'likes': post_obj.likes.all().count()
+            }
+            return JsonResponse(data, safe=False)
     return redirect("/home/")
