@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
@@ -25,9 +24,7 @@ SECRET_KEY = 'sjt27sbo&k85rnqm2qzm*2rcd$_=e7y*ecx_dv4o1a3_)l=m#^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS =  []
-
-
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -39,10 +36,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap_modal_forms',
+    'rest_framework',
     'myapp',
     'postapp',
-    'social_django',
-    
+    'api.apps.ApiConfig',
+    'rest_framework.authtoken',
+    # 'social_django',
+
 ]
 
 MIDDLEWARE = [
@@ -75,7 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'facebook.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -86,9 +85,14 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+}
 
-# Password validation
-# https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -105,7 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -119,27 +122,26 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-AUTHENTICATION_BACKENDS = [
-    'social_core.backends.linkedin.LinkedinOAuth2',
-    'social_core.backends.instagram.InstagramOAuth2',
-    'social_core.backends.facebook.FacebookOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-]
+# AUTHENTICATION_BACKENDS = [
+#     'social_core.backends.linkedin.LinkedinOAuth2',
+#     'social_core.backends.instagram.InstagramOAuth2',
+#     'social_core.backends.facebook.FacebookOAuth2',
+#     'django.contrib.auth.backends.ModelBackend',
+# ]
 
-LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = '/home/'
-LOGOUT_URL = 'logout'
-LOGOUT_REDIRECT_URL = 'signup'
+# LOGIN_URL = 'login'
+# LOGIN_REDIRECT_URL = '/home/'
+# LOGOUT_URL = 'logout'
+# LOGOUT_REDIRECT_URL = 'signup'
 
-SOCIAL_AUTH_FACEBOOK_KEY = 221887479451662       
-SOCIAL_AUTH_FACEBOOK_SECRET = '66b9667946824ef42b87736e70aa8ff0'
+# SOCIAL_AUTH_FACEBOOK_KEY = 221887479451662       
+# SOCIAL_AUTH_FACEBOOK_SECRET = '66b9667946824ef42b87736e70aa8ff0'

@@ -23,8 +23,8 @@ urlpatterns = [
     path('', include("myapp.urls")),
     path('', include("postapp.urls")),
     path('social-auth/', include('social_django.urls', namespace="social")),
-    
-    
-  
+    path('api/', include("api.urls")),
+    path('api-auth/',include('rest_framework.urls'))
 
+    
 ]

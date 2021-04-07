@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save ,pre_delete
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from django.db.models import Q
 
@@ -8,15 +8,15 @@ GENDER_CHOICES = (
     ("MALE", "male"),
     ("FEMALE", "female"),
     ("OTHER", "other"),
-    )
+)
 
 
 class ProfileManager(models.Manager):
 
-    def get_all_profile_to_invite(self , sender):
-        profiles = Profile.objects.all().exclude(user = sender)
-        profile = Profile.objects.get(user = sender)
-        qs = Relationship.objects.filter(Q(sender = profile) | Q(receiver = profile))
+    def get_all_profile_to_invite(self, sender):
+        profiles = Profile.objects.all().exclude(user=sender)
+        profile = Profile.objects.get(user=sender)
+        qs = Relationship.objects.filter(Q(sender=profile) | Q(receiver=profile))
         print(qs)
 
         accepted = set([])
@@ -30,8 +30,8 @@ class ProfileManager(models.Manager):
         print(available)
         return available
 
-    def get_all_profiles(self , me):
-        profiles = Profile.objects.all().exclude(user = me)
+    def get_all_profiles(self, me):
+        profiles = Profile.objects.all().exclude(user=me)
         return profiles
 
 
@@ -41,11 +41,11 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(max_length=150, null=True)
     bio = models.TextField(max_length=500, blank=True, null=True)
-    birth_date = models.CharField(max_length=100 ,null=True, blank=True)
-    gender = models.CharField(max_length=111,choices=GENDER_CHOICES)
-    image = models.ImageField(upload_to="images/post_pic",null=True,blank=True)
-    banner_image = models.ImageField(upload_to="images/post_pic",null=True,blank=True)
-    friends = models.ManyToManyField(User , related_name='friends', blank=True)
+    birth_date = models.CharField(max_length=100, null=True, blank=True)
+    gender = models.CharField(max_length=111, choices=GENDER_CHOICES)
+    image = models.ImageField(upload_to="images/post_pic", null=True, blank=True)
+    banner_image = models.ImageField(upload_to="images/post_pic", null=True, blank=True)
+    friends = models.ManyToManyField(User, related_name='friends', blank=True)
 
     objects = ProfileManager()
 
@@ -56,40 +56,43 @@ class Profile(models.Model):
         return self.friends.all().count()
 
     def __str__(self):
-        return str(self.user)  
+        return str(self.user)
 
-@receiver(post_save ,sender=User)
-def Profile_update(sender ,instance , created ,**kwargs):
+
+@receiver(post_save, sender=User)
+def Profile_update(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
 
 
 STATUS_CHOICES = (
-    ('send' , 'send'),
-    ('accepted' , 'accepted'),
+    ('send', 'send'),
+    ('accepted', 'accepted'),
 )
 
 
 class RelationshipManager(models.Manager):
-    def invatations_received(self ,receiver):
-        qs = Relationship.objects.filter(receiver = receiver ,status = 'send')
-        return qs 
+    def invatations_received(self, receiver):
+        qs = Relationship.objects.filter(receiver=receiver, status='send')
+        return qs
 
-class Relationship(models.Model): 
-    sender = models.ForeignKey(Profile , on_delete=models.CASCADE, related_name='sender')
-    receiver = models.ForeignKey(Profile , on_delete=models.CASCADE, related_name='receiver')
-    status = models.CharField(max_length=8 , choices = STATUS_CHOICES)
-    updated = models.DateField(auto_now = True)
-    created = models.DateField(auto_now_add = True)
+
+class Relationship(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    updated = models.DateField(auto_now=True)
+    created = models.DateField(auto_now_add=True)
 
     objects = RelationshipManager()
 
     def __str__(self):
         return f"{self.sender}-{self.receiver}-{self.status}"
 
-@receiver(post_save, sender = Relationship)
-def post_save_add_to_friends(sender ,created, instance, **kwargs):
+
+@receiver(post_save, sender=Relationship)
+def post_save_add_to_friends(sender, created, instance, **kwargs):
     sender_ = instance.sender
     receiver_ = instance.receiver
     if instance.status == 'accepted':
@@ -98,8 +101,9 @@ def post_save_add_to_friends(sender ,created, instance, **kwargs):
         sender_.save()
         receiver_.save()
 
-@receiver(pre_delete , sender=Relationship)
-def pre_delete_remove_from_friends(sender ,instance , **kwargs ):
+
+@receiver(pre_delete, sender=Relationship)
+def pre_delete_remove_from_friends(sender, instance, **kwargs):
     sender = instance.sender
     receiver = instance.receiver
 

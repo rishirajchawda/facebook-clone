@@ -34,7 +34,7 @@
     <br>
     {% if user.is_authenticated%}
         {% for rep in comment.replies.all %}
-        <strong>-Reply By -{{comment.user.username}}</strong><h3>{{rep}}</h3>
+        <strong>-Reply</strong><h3>{{rep}}</h3>
         {% endfor %}
         {% endif %}
     <form method="GET" action="{% url 'postapp:reply' %}" >

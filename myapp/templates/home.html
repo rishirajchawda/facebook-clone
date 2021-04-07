@@ -1,12 +1,12 @@
 {% load static %}
- 
+
 
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style2.css' %}">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
@@ -18,7 +18,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-    
 
 
     <title>Dashboard</title>
@@ -31,14 +30,14 @@
                 </div>
 
 <body>
+    
     <div class="td" id="search-form">
-        <form method="get" action="/search/">
+        <form method="get">
             <input type="text" name="query" id="query" placeholder="Search Facebook">
-            <button type="submit"><i class="material-icons">search</i></button>
+            <button id="search_button" type="submit">search </button>
         </form>
-
-
-
+        <div id="suggesstion-box"></div>
+        
     </div>
     <div class="td" id="f-name-l"><span>facebook</span></div>
     <div class="td" id="i-links">
@@ -107,7 +106,7 @@
                 <!-- <a href="/uploadcover/{{profile.id}}/"
                     style="color: white; background-color: #2162db;padding: 14px 25px;text-align: center;text-decoration: none;display: inline-block;">Upload Cover
                     </a> -->
-                    <br>
+                <br>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#coverModal">
                     Cover Image
                 </button>
@@ -171,16 +170,19 @@
                             <a href="#" class="q-ad">
                                 <img src="https://imagizer.imageshack.com/img923/1849/4TnLy1.png">
                                 <br>
-                                
-                                <a href="{% url 'myapp:friends' %}" ><button class="btn btn-primary">My Friend list</button>
-                                <br>
-                                <br>
-                        
-                                <a href="{% url 'myapp:all-profiles-view' %}" ><button class="btn btn-primary">Find Friends</button>
-                                <br>  
-                                <br> 
-                                <a href="{% url 'myapp:my-invites-view' %}" ><button class="btn btn-primary">Received Requests</button>
-                            </a>
+
+                                <a href="{% url 'myapp:friends' %}"><button class="btn btn-primary">My Friend
+                                        list</button>
+                                    <br>
+                                    <br>
+
+                                    <a href="{% url 'myapp:all-profiles-view' %}"><button class="btn btn-primary">Find
+                                            Friends</button>
+                                        <br>
+                                        <br>
+                                        <a href="{% url 'myapp:my-invites-view' %}"><button
+                                                class="btn btn-primary">Received Requests</button>
+                                        </a>
                         </div>
                         <div class="q-ad-c">
                             <a href="#" class="q-ad" id="add_q">
@@ -234,12 +236,102 @@
                     </div>
                 </div>
                 <div>
+
+        <!-- If user in friend list then we can see their post using code below                      -->
+
                     {% for po in post reversed %}
                     {% if po.user in profile.get_friends %}
                     <div class="post">
 
                         <div class="td">
 
+                            <a href="#" class="td p-p-pic"><img
+                                    src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"
+                                    alt="Rishiraj'S profile pic"></a>
+                            <div class="td p-r-hdr">
+                                <div class="p-u-info">
+                                    {{ po.user }}
+                                    <!-- <a href="#">Rajeev Singh</a> shared a memory with <a href="#">Himalaya Singh</a>  -->
+                                </div>
+                                <div class="p-dt">
+                                    {{ po.title }}
+                                    <br>
+                                    <strong>{{ po.yourpost }}</strong>
+                                    <br>
+                                    <span>{{ po.date_posted }}</span>
+                                </div>
+                            </div>
+                            <div class="td p-opt"><i class="material-icons"></i></div>
+                        </div>
+                        <a href="{% url 'postapp:detail' po.id %}" class="p-cnt-v">
+                            <img src="{% if po.post_pic %}
+                                        {{po.post_pic.url}}
+                                      {%endif%}">
+                        </a>
+                        <div>
+                            <div class="p-acts">
+                                <!-- <div class="like-count{{po.id}}">
+                                    <strong>{{ po.likes.all.count }} </strong>likes
+                                </div> -->
+
+                                <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form"
+                                    id="{{po.id}}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name='post_id' value={{po.id}}>
+
+                                    <button class="btn btn-success like-btn{{po.id}}" type='submit'>
+                                        {% if user not in po.likes.all %}
+                                        Like
+                                        {% else %}
+                                        Unlike
+                                        {% endif %}
+                                    </button>
+                                    <div class="ui grid">
+                                        <div class="column">
+                                            <div class="like-count{{po.id}}">
+                                                <strong>{{ po.likes.all.count }} </strong>
+                                            </div>
+                                        </div>
+                                        <div class="column">
+                                            <strong>Likes</strong>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <br>
+                                <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}"
+                                    role="button">Comments..</a>
+                                <div class="p-act share"><i class="material-icons"></i></div>
+                            </div>
+                        </div>
+
+                    </div>
+                    {% for comment in comments.all %}
+                    {% if comment.post == po %}
+                    <center>
+                        <h6>Comment By - {{comment.user.username}}</h6>
+                        <span class="card-title">{{comment.content}}</span>
+                        <span>
+                            <h10>{{comment.date_posted}}</h10>
+                        </span>
+                    </center>
+                    {% endif %}
+                    {% endfor %}
+
+
+
+        <!--    Logged in user can see their post using code below            -->
+
+                    <hr>
+                    {% elif po.user == profile.user%}
+                    <div class="post" id="single-posts">
+
+                        <div class="td">
+                            <div>
+
+                                <input type="hidden" id="del-id" value="{{po.id}}">
+                                <input type="button" id="del-btn" class="btn btn-danger btn-sm" value="delete">
+                            </div>
                             <a href="#" class="td p-p-pic"><img
                                     src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"
                                     alt="Rishiraj'S profile pic"></a>
@@ -258,143 +350,65 @@
                             </div>
                             <div class="td p-opt"><i class="material-icons"></i></div>
                         </div>
-                    <a href="{% url 'postapp:detail' po.id %}" class="p-cnt-v">
+                        <a href="{% url 'postapp:detail' po.id %}" class="p-cnt-v">
                             <img src="{% if po.post_pic %}
-                                        {{po.post_pic.url}}
-                                      {%endif%}">
+                                            {{po.post_pic.url}}
+                                          {%endif%}">
                         </a>
                         <div>
                             <div class="p-acts">
                                 <!-- <div class="like-count{{po.id}}">
-                                    <strong>{{ po.likes.all.count }} </strong>likes
-                                </div> --> 
-                                 
-                                <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form" id="{{po.id}}">
+                                        <strong>{{ po.likes.all.count }} </strong>likes
+                                    </div> -->
+
+                                <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form"
+                                    id="{{po.id}}">
                                     {% csrf_token %}
-                                    <input type="hidden" name = 'post_id' value={{po.id}}>
-                                    
-                                        <button class="btn btn-success like-btn{{po.id}}" type='submit'>
-                                            {% if user not in po.likes.all %}
-                                                Like
-                                            {% else %}
-                                                Unlike
-                                            {% endif %}
-                                        </button>
-                                        <div class="ui grid">
-                                            <div class="column">
-                                                <div class="like-count{{po.id}}">
-                                                    <strong>{{ po.likes.all.count }} </strong>
-                                                </div>
-                                            </div>
-                                            <div class="column">
-                                                <strong>Likes</strong>
+                                    <input type="hidden" name='post_id' value={{po.id}}>
+
+                                    <button class="btn btn-success like-btn{{po.id}}" type='submit'>
+                                        {% if user not in po.likes.all %}
+                                        Like
+                                        {% else %}
+                                        Unlike
+                                        {% endif %}
+                                    </button>
+                                    <div class="ui grid">
+                                        <div class="column">
+                                            <div class="like-count{{po.id}}">
+                                                <strong>{{ po.likes.all.count }} </strong>
                                             </div>
                                         </div>
+                                        <div class="column">
+                                            <strong>Likes</strong>
+                                        </div>
+                                    </div>
                                 </form>
-                            
-                            <br>
-                                <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}" role="button">Comments..</a>
+
+                                <br>
+                                <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}"
+                                    role="button">Comments..</a>
                                 <div class="p-act share"><i class="material-icons"></i></div>
                             </div>
                         </div>
-                      
-                    </div>
-                      {% for comment in comments.all %}
-                      {% if comment.post == po %}
-                      <center>
-                          <h6>Comment By - {{comment.user.username}}</h6>
-                          <span class="card-title">{{comment.content}}</span>
-                          <span><h10>{{comment.date_posted}}</h10></span> 
-                      </center>
-                          {% endif %}
-                          {% endfor %}
-                                  
-                            
-                            
-                        
-                        <hr>
-                        {% elif po.user == profile.user%}
-                        <div class="post" id="single-posts">
 
-                            <div class="td">
-                                <div>
-                                    
-                                    <input type="hidden" id="del-id" value="{{po.id}}">
-                                    <input type="button" id="del-btn" class="btn btn-danger btn-sm" value="delete">
-                                 </div>
-                                <a href="#" class="td p-p-pic"><img
-                                        src="https://imagizer.imageshack.com/img923/2452/zifFKH.jpg"
-                                        alt="Rishiraj'S profile pic"></a>
-                                <div class="td p-r-hdr">
-                                    <div class="p-u-info">
-                                        {{ po.user }}
-                                        <!-- <a href="#">Rajeev Singh</a> shared a memory with <a href="#">Himalaya Singh</a>  -->
-                                    </div>
-                                    <div class="p-dt">
-                                        <i class="material-icons">{{ po.title }}</i>
-                                        <br>
-                                        {{ po.yourpost }}
-                                        <br>
-                                        <span>{{ po.date_posted }}</span>
-                                    </div>
-                                </div>
-                                <div class="td p-opt"><i class="material-icons"></i></div>
-                            </div>
-                        <a href="{% url 'postapp:detail' po.id %}" class="p-cnt-v">
-                                <img src="{% if po.post_pic %}
-                                            {{po.post_pic.url}}
-                                          {%endif%}">
-                            </a>
-                            <div>
-                                <div class="p-acts">
-                                    <!-- <div class="like-count{{po.id}}">
-                                        <strong>{{ po.likes.all.count }} </strong>likes
-                                    </div> --> 
-                                     
-                                    <form action="{% url 'postapp:like-posts' %}" method="POST" class="like-form" id="{{po.id}}">
-                                        {% csrf_token %}
-                                        <input type="hidden" name = 'post_id' value={{po.id}}>
-                                        
-                                            <button class="btn btn-success like-btn{{po.id}}" type='submit'>
-                                                {% if user not in po.likes.all %}
-                                                    Like
-                                                {% else %}
-                                                    Unlike
-                                                {% endif %}
-                                            </button>
-                                            <div class="ui grid">
-                                                <div class="column">
-                                                    <div class="like-count{{po.id}}">
-                                                        <strong>{{ po.likes.all.count }} </strong>
-                                                    </div>
-                                                </div>
-                                                <div class="column">
-                                                    <strong>Likes</strong>
-                                                </div>
-                                            </div>
-                                    </form>
-                                
-                                <br>
-                                    <a class="btn btn-primary" href="{% url 'postapp:detail' po.id %}" role="button">Comments..</a>
-                                    <div class="p-act share"><i class="material-icons"></i></div>
-                                </div>
-                            </div>
-                          
-                        </div>
-                          {% for comment in comments.all %}
-                          {% if comment.post == po %}
-                          <center>
-                              <h6>Comment By - {{comment.user.username}}</h6>
-                              <span class="card-title">{{comment.content}}</span>
-                              <span><h10>{{comment.date_posted}}</h10></span> 
-                          </center>
-                              {% endif %}
-                              {% endfor %}
-                                      
-                                
-                                
-                            <hr>
-                            {% endif %}
+                    </div>
+                    {% for comment in comments.all %}
+                    {% if comment.post == po %}
+                    <center>
+                        <h6>Comment By - {{comment.user.username}}</h6>
+                        <span class="card-title">{{comment.content}}</span>
+                        <span>
+                            <h10>{{comment.date_posted}}</h10>
+                        </span>
+                    </center>
+                    {% endif %}
+                    {% endfor %}
+
+
+
+                    <hr>
+                    {% endif %}
                     {% endfor %}
 
                 </div>
@@ -551,138 +565,168 @@
 
     <!-- comment button end -->
     <!-- comment modal -->
-    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-                <img src=" {{post.post_pic.url }}" alt="" width="400" height="500">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src=" {{post.post_pic.url }}" alt="" width="400" height="500">
 
-                <br>
-                <br>
-                <br>
-                <br>
-                {% for comment in comments.all %}
-                <br>
-                <br>
-                <h4>{{comment.content}}</h4>
-                <h6>Comment By - {{comment.user.username}}</h6>
-                <h6>{{comment.date_posted}}</h6>
-                
-                <br>
-                {% for rep in comment.replies.all %}
-                <strong>-Reply</strong><h3>{{rep}}</h3>
-                {% endfor %}
-                <form method="GET" action="{% url 'postapp:reply' %}" >
-                       
-                    <!-- <input type="text" name="content" placeholder="comment "> -->
-                    <div class="form-floating">
-                        <input type="text" name="content" class="form-control" id="floatingInput" style="width: 300px" placeholder="comment">
-                        <label for="floatingInput">Reply</label>
-                      </div>
-                    <input type="hidden" name="postid" value="{{post.id}}">
-                    <input type="hidden" name="commentid" value="{{comment.id}}">
-                <br>
-                    <button class="btn btn-dark" type="submit"> Reply </button>
-                </form>
-                         
-                {% endfor%}
-                  <hr>
-                <div>
-                    <form method="GET" action="{% url 'postapp:comment' %}" >
-                       
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    {% for comment in comments.all %}
+                    <br>
+                    <br>
+                    <h4>{{comment.content}}</h4>
+                    <h6>Comment By - {{comment.user.username}}</h6>
+                    <h6>{{comment.date_posted}}</h6>
+
+                    <br>
+                    {% for rep in comment.replies.all %}
+                    <strong>-Reply</strong>
+                    <h3>{{rep}}</h3>
+                    {% endfor %}
+                    <form method="GET" action="{% url 'postapp:reply' %}">
+
                         <!-- <input type="text" name="content" placeholder="comment "> -->
                         <div class="form-floating">
-                            <input type="text" name="content" class="form-control" id="floatingInput" style="width: 500px" placeholder="comment">
-                            <label for="floatingInput">Comment</label>
-                          </div>
+                            <input type="text" name="content" class="form-control" id="floatingInput"
+                                style="width: 300px" placeholder="comment">
+                            <label for="floatingInput">Reply</label>
+                        </div>
                         <input type="hidden" name="postid" value="{{post.id}}">
-                          <br>
-                        <button class="btn btn-dark" type="submit"> comment </button>
+                        <input type="hidden" name="commentid" value="{{comment.id}}">
+                        <br>
+                        <button class="btn btn-dark" type="submit"> Reply </button>
                     </form>
+
+                    {% endfor%}
+                    <hr>
+                    <div>
+                        <form method="GET" action="{% url 'postapp:comment' %}">
+
+                            <!-- <input type="text" name="content" placeholder="comment "> -->
+                            <div class="form-floating">
+                                <input type="text" name="content" class="form-control" id="floatingInput"
+                                    style="width: 500px" placeholder="comment">
+                                <label for="floatingInput">Comment</label>
+                            </div>
+                            <input type="hidden" name="postid" value="{{post.id}}">
+                            <br>
+                            <button class="btn btn-dark" type="submit"> comment </button>
+                        </form>
+                    </div>
                 </div>
-          </div>
+            </div>
         </div>
-      </div>
-    <!-- comment modal end -->
-      
+        <!-- comment modal end -->
 
 
 
 
-    <script src="{% static 'js/bootstrap.js' %}"></script>
-    <script src="{% static 'js/jquery.js' %}"></script>
-    <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
-    <script src="{% static 'js/index.js' %}"></script>
-    <!-- You can alternatively load the minified version -->
-    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
-    <script>
-        $( document ).ready(function() {
-            let display = false
-            $('.like-form').submit(function(e){
-                e.preventDefault()
 
-                const post_id = $(this).attr('id')
-                
-                const likeText = $(`.like-btn${post_id}`).text()
-                const trim =$.trim(likeText)
-                
-                const url = $(this).attr('action')
-                
-                let res;
-                const likes = $(`.like-count${post_id}`).text()
-                const trimCount = parseInt(likes)
-                console.log(trimCount + 1)
+        <script src="{% static 'js/bootstrap.js' %}"></script>
+        <script src="{% static 'js/jquery.js' %}"></script>
+        <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
+        <script src="{% static 'js/index.js' %}"></script>
+        <!-- You can alternatively load the minified version -->
+        <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+        <script>
+            $(document).ready(function () {
+                let display = false
+                $('.like-form').submit(function (e) {
+                    e.preventDefault()
 
+                    const post_id = $(this).attr('id')
+
+                    const likeText = $(`.like-btn${post_id}`).text()
+                    const trim = $.trim(likeText)
+
+                    const url = $(this).attr('action')
+
+                    let res;
+                    const likes = $(`.like-count${post_id}`).text()
+                    const trimCount = parseInt(likes)
+                    console.log(trimCount + 1)
+
+                    $.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: {
+                            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                            'post_id': post_id,
+                        },
+                        success: function (response) {
+                            if (trim === 'Unlike') {
+                                $(`.like-btn${post_id}`).text('Like')
+                                res = trimCount - 1
+                            } else {
+                                $(`.like-btn${post_id}`).text('Unlike')
+                                res = trimCount + 1
+                            }
+
+                            $(`.like-count${post_id}`).text(res)
+                        },
+                        error: function (response) {
+                            console.log('error', response)
+                        }
+                    })
+                })
+            });
+        </script>
+        <script>
+            // $("#query").keypress(function(){
+            //     alert("buu")
+            // // $("#search_button").click();
+            // });
+            $("#query").keyup(function () {
                 $.ajax({
-                    type: 'POST',
-                    url: url,
-                    data:{
-                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
-                        'post_id':post_id,
-                    },
-                    success: function(response){
-                        if(trim === 'Unlike'){
-                            $(`.like-btn${post_id}`).text('Like')
-                            res = trimCount - 1
-                        }else{
-                            $(`.like-btn${post_id}`).text('Unlike')
-                            res = trimCount + 1
+                    type: "GET",
+                    url: {% url 'myapp:suggestions' %},
+                    data: 'query=' + $(this).val(),
+                    // beforeSend : function () {
+                    //     $("#query").css("background","#FFF url(https://phppot.com/demo/jquery-ajax-autocomplete-country-example/loaderIcon.gif) no-repeat 165px");
+                    // },
+                    success: function (data) {
+                        if (query.search === '') {
+                            $("#suggesstion-box").hide(data);
+
+                        }
+                        else {
+                            $("#suggesstion-box").show();
+                            $("#suggesstion-box").html(data);
+                            
                         }
 
-                        $(`.like-count${post_id}`).text(res)
-                    },
-                    error:function(response){
-                        console.log('error',response)
                     }
-                })
-            })
-        });
-    </script>
-    <script>
-        $(document).on('click', '#del-btn',function(e){ //BUTTON ID
+                });
+            });
+            $(document).on('click', '#del-btn', function (e) { //BUTTON ID
 
-          var del_id = $('#del-id').val(); //INPUT FIELD
-          var my_data = {
-            "del_id" : del_id,
-            'csrfmiddlewaretoken': "{{ csrf_token }}",
-          }
-          $.ajax({
-          type:'POST',
-          url: '{% url "postapp:postdelete" %}',
-          data:my_data,
-        success:function(json){
-          $("#single-posts").remove()
-          alert("Do you want to delete post");
-          },
-        });
-        });
-    </script>
+                var del_id = $('#del-id').val(); //INPUT FIELD
+                var my_data = {
+                    "del_id": del_id,
+                    'csrfmiddlewaretoken': "{{ csrf_token }}",
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "postapp:postdelete" %}',
+                    data: my_data,
+                    success: function (json) {
+                        $("#single-posts").remove()
+                        alert("Do you want to delete post");
+                    },
+                });
+            });
+        </script>
 
 </body>
 ￼
@@ -694,11 +738,11 @@
             {{po.post_pic.url}}
           {%endif%}"> </td>
 {% endfor %} -->
-<form method="POST"> 
-    {% csrf_token %} 
-    {{comment_form.as_p}} 
+<form method="POST">
+    {% csrf_token %}
+    {{comment_form.as_p}}
     <button type="submit" value="Submit" class="btn btn-success">Create</button>
-  </form> 
+</form>
 
 
 </main>
