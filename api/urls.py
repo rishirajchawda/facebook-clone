@@ -17,7 +17,7 @@ urlpatterns = [
     path('post-update/<int:pk>/', views.PostUpdate.as_view(), name="post-update"),
     path('post-list/', views.PostList.as_view(), name="post-list"),
     path('post-delete/<int:pk>/', views.PostDelete.as_view(), name="post-delete"),
-    path('friend-list/', views.FriendList.as_view(), name="post-list"),
+    path('friend-list/', views.AllFriendList.as_view(), name="post-list"),
     path('friend-rec/', views.FriendRec.as_view(), name="friend-rec"),
 
 ]

@@ -96,7 +96,7 @@ class PostList(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
 
-class FriendList(APIView):
+class AllFriendList(APIView):
     permission_classes = (IsAuthenticated, IsAdminUser)
 
     def get(self, request):

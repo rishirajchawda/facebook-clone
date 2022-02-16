@@ -55,8 +55,8 @@ class Profile(models.Model):
     def get_friends_no(self):
         return self.friends.all().count()
 
-    def __str__(self):
-        return str(self.user)
+    
+    
 
 
 @receiver(post_save, sender=User)
